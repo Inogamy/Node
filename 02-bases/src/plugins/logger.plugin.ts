@@ -1,12 +1,15 @@
-const winston = require('winston');
-const { combine, timestamp, json } = winston.format
+import winston, { format } from 'winston';
 
-const logger = winston.createLogger({
+const { combine, timestamp, json } = format;
+
+
+export const logger = winston.createLogger({
   level: 'info',
   format: combine(
     timestamp(),
     json(),
   ),
+  // defaultMeta: { service: 'user-service' },
   transports: [
     //
     // - Write all logs with importance level of `error` or less to `error.log`
@@ -19,20 +22,24 @@ const logger = winston.createLogger({
 
 logger.add(new winston.transports.Console({
   format: winston.format.simple(),
-}))
+}));
 
-module.exports = function buildLogger(service) {
+export const buildLogger = (service: string) => {
 
   return {
-    log: (message) => {
-      logger.log('info', { message, service })
+    log: (message: string) => {
+      logger.log('info', {
+        message,
+        service
+      });
     },
-    error: (message) => {
-      logger.error('error', {
+    error: (message: string) => {
+      logger.error({
         message,
         service,
-      })
+      });
     }
   }
+
 
 }
